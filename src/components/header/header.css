@@ -1,0 +1,45 @@
+.header{
+    height: 50px;
+    width: 100%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+}
+.header h1{
+    font-size: 20px;
+    margin: 0;
+}
+.Top_box{
+    display: flex;
+    align-items: center;
+}
+.Top_box div{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 60px;
+    cursor: pointer;
+    /* transition: all 1s linear; */
+}
+.Top_box div i,.Top_box div p{
+    transition: all 0.1s linear;
+    margin: 0;
+}
+.Top_box div:hover i,
+.Top_box div:hover p{
+    text-shadow: 1px 1px 1px rgba(255, 6, 6, 0.747);
+    color: red;
+}
+@media (max-width:425px){
+
+    .Top_box div p{
+        display: none;
+    }
+    .Top_box div{
+        justify-content: end;
+        font-size: 20px;
+    }
+
+}

@@ -1,0 +1,159 @@
+.profile{
+    background-color: white;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 70px;
+    width: 80%;
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    padding: 20px 0;
+    border-radius: 5px;
+    position: relative;
+}
+.imgDiv img{
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+    /* border: 2px solid rgb(2, 2, 85); */
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    padding: 5px;
+
+}
+.imgDiv input{
+    display: none;
+}
+.imgDiv label{
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+}
+.imgDiv label i{
+    font-size: 22px;
+    font-weight:900;
+}
+.imgDiv{
+    height: 180px;
+    width: 180px;
+    position: relative;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 7px;
+}
+.details{
+    text-align: center;
+    padding: 10px;
+    gap: 4px;
+    display: flex;
+    flex-direction: column;
+}
+.details .name{
+    font-size: 30px;
+    margin: 0;
+    text-transform: capitalize;
+    
+}
+.email{
+    font-size: 14px;
+    text-transform: capitalize;
+    font-weight: 500;
+
+}
+.AccountDetails{
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    height: max-content;
+    align-items: center;
+    gap: 20px;
+    /* border:1px solid #808080 ; */
+    padding: 17px 10px;
+
+}
+.AccountDetails div{
+    cursor: pointer;
+    width: 33%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.AccountDetails .h1{
+    font-size: 12px;
+    margin: 0;
+
+}
+.btn-white{
+    color:blue;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+.btn-danger{
+    /* color:blue; */
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.btn-danger span{
+    padding: 0 7px 0 0;
+}
+.btn-white:hover{
+    background-color: whitesmoke;
+    
+}
+.gender{
+    font-size: 14px;
+    text-transform: capitalize;
+    margin:0 ;
+
+}
+.bio{
+    font-size: 12px;
+    text-transform: capitalize;
+
+}
+@media (max-width:768px){
+    .details .name{
+        font-size: 23px;
+    }
+    .btn-white span,.btn-danger span{
+        display: none;
+    }
+    .btn-white{
+        top:0px;
+        left: 0;
+    }
+    .btn-danger{
+        top:0px;
+        right: 0;
+        color:red;
+        background-color: white;
+        border: none;
+        font-size: 18px;
+    }
+}
+
+@media (max-width:425px){
+    
+    .imgDiv{
+        height: 150px;
+        width: 150px;
+    }
+    .imgDiv img{
+        height: 130px;
+        width: 130px;
+    }
+    .imgDiv label{
+        bottom: 3px;
+        right: 10px;
+    }
+    .imgDiv label i{
+        font-size: 20px;
+        font-weight:900;
+    }
+}

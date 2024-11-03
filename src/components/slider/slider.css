@@ -1,0 +1,50 @@
+.slider {
+    background-color: white;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
+
+.slider div {
+    width: 100px;
+    height: 100%;
+    display: flex;
+    font-size: 18px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+
+}
+.slider div:hover i,.slider div:hover p {
+    color: blue;
+    text-shadow: 1px 1px 1px rgba(23, 6, 255, 0.747);
+
+
+}
+
+.slider div i {
+    padding-right: 10px;
+    transition: all 0.1s linear;
+}
+.slider div p{
+    margin: 0;
+    transition: all 0.1s linear;
+
+}
+@media (max-width:425px){
+    .slider div p{
+        display: none;
+    
+    }
+    .slider div i {
+        font-size: 20px;
+        padding: 0;
+    }
+
+}

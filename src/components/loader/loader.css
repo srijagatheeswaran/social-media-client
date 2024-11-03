@@ -1,0 +1,15 @@
+.loader{
+    background-color: whitesmoke;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    right: 0;
+}
+.loading{
+    height: 100px;
+    width: 100px;
+}
