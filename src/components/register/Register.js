@@ -40,6 +40,9 @@ function Register() {
             if (isValid) {
                 navigate("/home")
             } 
+            else{
+                console.log("login")
+            }
         };
         handleLogin()
     },[])
@@ -97,7 +100,7 @@ function Register() {
                 if (data.message) {
                     setMessage(data.message);
                     setLoader(false)
-                    if(data.message=='User already exists'){
+                    if(data.message==='Email already exists' || data.message==='Username already exists'){
                         notifiyErr(data.message)
                     }
                     else{

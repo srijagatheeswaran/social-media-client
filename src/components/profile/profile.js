@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../../context/AuthContext";
+import Post from "../../components/post/post";
 
 
 
@@ -18,7 +19,6 @@ export default function Profile() {
 
     const navigate = useNavigate()
     const [addClass, setAddClass] = useState(false);
-    const [loader, setloader] = useState(true)
     const [profileData, setProfileData] = useState({});
     // const email = "jagan@gmail.com"
     const [error, setError] = useState(null);
@@ -27,6 +27,7 @@ export default function Profile() {
         "https://www.pngfind.com/pngs/b/110-1102775_download-empty-profile-hd-png-download.png"
     );
     const [imageData, setImageData] = useState(null);
+    const [loader, setloader] = useState(true)
     const userEmail = localStorage.getItem("email")
     const token = localStorage.getItem("token")
 
@@ -93,12 +94,12 @@ export default function Profile() {
 
             });}
             const handleLogin = async () => {
-                console.log(userEmail, token)
+                // console.log(userEmail, token)
                 const isValid = await checkAuth(userEmail, token);
                 if (isValid) {
                     showContant()
                 } else {
-                    navigate("/login")
+                    navigate("/home")
                 }
             };
         handleLogin()
@@ -164,7 +165,7 @@ export default function Profile() {
     return <>
     {isAuthenticated ?
     <>
-        <Header />
+        <Header isAuthenticated={isAuthenticated} />
         <div className="profile">
                 <Update showUpdateHandle={showUpdateHandle} addClass={addClass} email={userEmail} />
             {/* {showUpdate ? <Update showUpdateHandle={showUpdateHandle} addClass={addClass}  /> : null} */}
@@ -172,7 +173,7 @@ export default function Profile() {
             <button className="btn btn-danger" onClick={Logout} ><span>Logout</span><i className="bi bi-box-arrow-right"></i> </button>
             <div className="imgDiv">
                 <label htmlFor="imgInput"><i className="bi bi-upload"></i></label>
-                <input type="file" id="imgInput" onChange={handleImageChange} />
+                <input type="file" accept="image/*" id="imgInput" onChange={handleImageChange} />
                 <img src={imageUrl} />
             </div>
             <div className="details">
@@ -196,8 +197,7 @@ export default function Profile() {
                 </div>
 
             </div>
-
-
+{/* <Post/> */}
             {loader ? <Loader /> : null}
         </div>
         <ToastContainer />

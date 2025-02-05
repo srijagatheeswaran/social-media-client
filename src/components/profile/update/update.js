@@ -99,8 +99,8 @@ export default function Update({ showUpdateHandle, addClass, email}) {
                 <select name="gender" onChange={change} value={input.gender}>
                     <option value="">Select</option>
                     <option value="male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Others">Others</option>
+                    <option value="female">Female</option>
+                    <option value="others">Others</option>
                 </select>
                 <textarea placeholder="Bio" name="bio" onChange={change} value={input.bio} />
 

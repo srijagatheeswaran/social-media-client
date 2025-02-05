@@ -105,6 +105,9 @@ function Login() {
                         if (data.message == "Invalid User" || data.message == "Invalid password") {
                             notifiyErr(data.message)
                         }
+                        else if(data.message==='Server error'){
+                            notifiyErr(data.message)
+                        }
                         else {
                             notifiysuccess(data.message)
                             navigate("/home")

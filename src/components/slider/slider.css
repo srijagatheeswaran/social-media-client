@@ -21,6 +21,11 @@
 
 
 }
+.slider div.active {
+    background-color: green;
+    color: white;
+}
+
 .slider div:hover i,.slider div:hover p {
     color: blue;
     text-shadow: 1px 1px 1px rgba(23, 6, 255, 0.747);
@@ -36,6 +41,10 @@
     margin: 0;
     transition: all 0.1s linear;
 
+}
+.slider div .active {
+    background-color: green;
+    color: white;
 }
 @media (max-width:425px){
     .slider div p{

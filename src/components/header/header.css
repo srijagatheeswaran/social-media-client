@@ -14,6 +14,7 @@
 .Top_box{
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 .Top_box div{
     display: flex;
@@ -40,6 +41,7 @@
     .Top_box div{
         justify-content: end;
         font-size: 20px;
+        width: max-content;
     }
 
 }

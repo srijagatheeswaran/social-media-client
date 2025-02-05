@@ -1,15 +1,10 @@
 import "./slider.css"
-import { useNavigate  } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Slider() {
 
-const navigate  = useNavigate ()
+    const navigate = useNavigate()
 
-function nav(rout){
-    navigate(rout)
-    console.log(rout)
-
-}
 
 
     return <>
@@ -22,10 +17,15 @@ function nav(rout){
                 <i className="bi bi-person-circle"></i>
                 <p>Profile</p>
             </div>
-            <div onClick={() => navigate("/home")}>
+            <div onClick={() => navigate("/chat")}>
                 <i className="bi bi-chat"></i>
                 <p>Chat</p>
             </div>
+            <div onClick={() => navigate("/search")}>
+                <i className="bi bi-search"></i>
+                <p>Search</p>
+            </div>
+
         </div>
     </>
 }
