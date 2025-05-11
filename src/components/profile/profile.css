@@ -1,7 +1,8 @@
-.profile{
-    background-color: white;
+.profile {
+    height: 300px;
+    background-color: #1e2738;
     margin: 0 auto;
-    margin-top: 20px;
+    margin-top:100px;
     margin-bottom: 70px;
     width: 80%;
     height: max-content;
@@ -13,8 +14,11 @@
     padding: 20px 0;
     border-radius: 5px;
     position: relative;
+    color: white;
+    flex-wrap: wrap;
 }
-.imgDiv img{
+
+.imgDiv img {
     height: 150px;
     width: 150px;
     border-radius: 50%;
@@ -23,19 +27,25 @@
     padding: 5px;
 
 }
-.imgDiv input{
+
+.imgDiv input {
     display: none;
 }
-.imgDiv label{
+
+.imgDiv label {
     position: absolute;
     bottom: 5px;
     right: 10px;
 }
-.imgDiv label i{
+
+.imgDiv label i {
     font-size: 22px;
-    font-weight:900;
+    font-weight: 900;
+    color: #1e2738;
 }
-.imgDiv{
+
+.imgDiv {
+    background-color: white;
     height: 180px;
     width: 180px;
     position: relative;
@@ -45,26 +55,40 @@
     align-items: center;
     border-radius: 7px;
 }
-.details{
+
+.details {
     text-align: center;
     padding: 10px;
     gap: 4px;
     display: flex;
     flex-direction: column;
 }
-.details .name{
+
+.details .name {
     font-size: 30px;
     margin: 0;
-    text-transform: capitalize;
-    
+    /* text-transform: capitalize; */
+    padding-bottom: 10px;
+    padding-top: 10px;
+
 }
-.email{
+.sub-detail{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.email {
     font-size: 14px;
-    text-transform: capitalize;
+    /* text-transform: capitalize; */
     font-weight: 500;
 
 }
-.AccountDetails{
+
+.AccountDetails {
     display: flex;
     justify-content: space-evenly;
     width: 100%;
@@ -75,85 +99,124 @@
     padding: 17px 10px;
 
 }
-.AccountDetails div{
+
+.sub-box {
     cursor: pointer;
     width: 33%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    color: #638acd;
+    transition: all 0.2s linear;
 }
-.AccountDetails .h1{
+.sub-box:hover {
+    color: white;
+}
+
+.AccountDetails .h1 {
     font-size: 12px;
     margin: 0;
 
 }
-.btn-white{
-    color:blue;
+
+.edit {
+    background-color: #455880;
+    color: white;
     position: absolute;
     top: 10px;
     left: 10px;
 }
-.btn-danger{
-    /* color:blue; */
+
+.btn-danger {
     position: absolute;
     top: 10px;
     right: 10px;
 }
-.btn-danger span{
+
+.btn-danger:hover {
+    background-color: #fe655d;
+    color: white;
+}
+
+.btn-danger span ,.edit span {
     padding: 0 7px 0 0;
 }
-.btn-white:hover{
-    background-color: whitesmoke;
-    
+
+.edit:hover {
+    background-color: #4160a2;
+    color: white;
 }
-.gender{
+
+.gender {
     font-size: 14px;
     text-transform: capitalize;
-    margin:0 ;
+    margin: 0;
 
 }
-.bio{
-    font-size: 12px;
+
+.bio {
+    font-size: 14px;
     text-transform: capitalize;
+    margin: 0;
 
 }
-@media (max-width:768px){
-    .details .name{
-        font-size: 23px;
+.gender strong,.bio strong{
+    color:#97b1cc;
+}
+
+@media (max-width:768px) {
+    .details .name {
+        padding-top: 10px;
+        font-size: 20px;
     }
-    .btn-white span,.btn-danger span{
+
+    .edit span,
+    .btn-danger span {
         display: none;
     }
-    .btn-white{
-        top:0px;
-        left: 0;
+
+    .edit {
+        top: 10px;
+        left: 10px;
+        background: none !important;
+        padding: 0;
     }
-    .btn-danger{
-        top:0px;
-        right: 0;
-        color:red;
-        background-color: white;
+
+    .btn-danger {
+        padding: 0;
+        top: 10px;
+        right: 10px;
+        background: none !important;
         border: none;
         font-size: 18px;
     }
 }
 
-@media (max-width:425px){
-    
-    .imgDiv{
+@media (max-width:425px) {
+
+    .imgDiv {
         height: 150px;
         width: 150px;
     }
-    .imgDiv img{
+
+    .imgDiv img {
         height: 130px;
         width: 130px;
     }
-    .imgDiv label{
+
+    .imgDiv label {
         bottom: 3px;
         right: 10px;
     }
-    .imgDiv label i{
+
+    .imgDiv label i {
         font-size: 20px;
-        font-weight:900;
+        font-weight: 900;
+    }
+    .details .name{
+        font-size: 15px;
+    }
+    .email{
+        font-size: 10px;
     }
 }

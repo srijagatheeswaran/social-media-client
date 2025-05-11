@@ -1,31 +1,32 @@
-import { useState,useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import './Login.css';
 import { Link } from "react-router-dom";
-import Loader from "../loader/loader";
-import { ToastContainer, toast, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/toastContext';
+import customFetch from "../../api";
+
 
 
 function Login() {
 
 
     const [input, setInput] = useState({ email: '', password: '' })
-    const [message, setMessage] = useState({})
     const [loader, setLoader] = useState(false)
     const [errors, setErrors] = useState({});
     const navigate = useNavigate()
     const { isAuthenticated, checkAuth } = useAuth()
     const email = localStorage.getItem("email")
     const token = localStorage.getItem("token")
+    const Toaster = useToast()
 
     function change(e) {
         const name = e.target.name;
         const value = e.target.value;
         setInput((pre) => { return { ...pre, [name]: value } })
         setErrors((prev) => ({ ...prev, [name]: "" }));
-        
+
     }
     const validateForm = () => {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,129 +34,92 @@ function Login() {
         if (!input.email || !emailPattern.test(input.email)) {
             newErrors.email = "Invalid email format.";
         }
-    
+
         if (!input.password || input.password.length < 6) {
             newErrors.password = "Password must be at least 6 characters.";
         }
-    
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-    useEffect(()=>{
-        const handleLogin = async () => {
-            const isValid = await checkAuth(email, token);
-            if (isValid) {
-                navigate("/home")
-            } 
-        };
-        handleLogin()
-    },[])
 
-    useEffect(() => {
-        validateForm();
-    }, [input]);
-    function notifiyErr(err) {
-        toast.error(err, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            theme: "colored",
-            transition: Flip,
-        });
-    }
-    function notifiysuccess(data) {
-        toast.success(data, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: 0,
-            theme: "colored",
-            transition: Flip,
-        });
-    }
+
     function login(e) {
-        e.preventDefault()
-        // console.log(input)
-        Object.values(errors).forEach((error) => {
-            if(!error==''){
-                notifiyErr(error);     
-            }
-        });
-        if (validateForm()){
-            setLoader(true)
-            fetch('http://localhost:3000/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: input.email,
-                    password: input.password
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    setLoader(false)
-                    if (data.message) {
-                        setMessage(data.message);
-                        if (data.message == "Invalid User" || data.message == "Invalid password") {
-                            notifiyErr(data.message)
-                        }
-                        else if(data.message==='Server error'){
-                            notifiyErr(data.message)
-                        }
-                        else {
-                            notifiysuccess(data.message)
-                            navigate("/home")
-                            // console.log(data.email,data.token)
-                            localStorage.setItem("email",data.email)
-                            localStorage.setItem("token",data.token)
-                        }
-    
-                    } else {
-                        setMessage('Login failed');
-                        notifiyErr('Login failed')
-                    }
-                })
-                .catch(error => {
-                    setLoader(false)
-                    notifiyErr(error)
-                    console.error('Error:', error);
-                    setMessage('An error occurred');
-                });
-    
+        e.preventDefault();
+        if (validateForm()) {
+            const handleLogin = async () => {
+                setLoader(true);
 
+                try {
+                    const { status, body } = await customFetch("auth/login", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            email: input.email,
+                            password: input.password
+                        })
+                    });
+
+                    setLoader(false);
+
+                    if (status === 200) {
+                        localStorage.setItem("email", body.email);
+                        localStorage.setItem("token", body.token);
+                        Toaster(body.message, "success");
+                        navigate("/home");
+                    } else if (status === 400) {
+                        Toaster(body.message, "error");
+                    } else if (status === 403) {
+                        Toaster(body.message, "error");
+                        localStorage.setItem("email", body.email);
+                        navigate("/otp-verification");
+                    } else {
+                        Toaster("Something went wrong", "error");
+                    }
+                } catch (error) {
+                    setLoader(false);
+                    Toaster(error.message || "Network error", "error");
+                    console.error("Error:", error);
+                }   
+            };
+            handleLogin();
         }
 
     }
 
 
     return <>
-        <div className="wrapper">
-            {loader ? <Loader /> : null}
-            <div className="text-center mt-4 name">
-                LOGIN
-            </div>
-            <form className="p-3 mt-3">
-                <div className="form-field d-flex align-items-center">
-                    <span className="fa-solid fa-envelope"></span>
-                    <input type="text" name="email" onChange={change} id="userName" placeholder="Email" />
+        <div className='login_container'>
+            <div className='center-box container'>
+                <div className="text-center mt-4 h3">
+                    Login
                 </div>
-                <div className="form-field d-flex align-items-center">
-                    <span className="fas fa-key"></span>
-                    <input type="password" name="password" onChange={change} id="pwd" placeholder="Password" />
+                <form className="">
+                    <div className="form-field d-flex align-items-center">
+                        <span className="fa-solid fa-envelope"></span>
+                        <input
+                            type="text"
+                            name="email"
+                            onChange={change}
+                            id="userName"
+                            placeholder="Email"
+                            className={errors.email ? `error` : ""}
+                        />
+                        {errors.email && <p className="text-danger m-0 ps-3 w-100">{errors.email}</p>}
+                    </div>
+                    <div className="form-field d-flex align-items-center">
+                        <span className="fas fa-key"></span>
+                        <input type="password" name="password" onChange={change} id="pwd" placeholder="Password"
+                            className={errors.password ? `error` : ""} />
+                        {errors.password && <p className="text-danger m-0 ps-3 w-100">{errors.password}</p>}
+                    </div>
+                    <button className="btn btn-light" onClick={login} disabled={loader}>Sign in</button>
+                    {loader ? <p className="message text-danger m-0 loading-dots">Submitting<span> .</span><span> .</span><span> .</span></p> : null}
+                </form>
+                <div className="text-center ">
+                    <div style={{ display: "flex", gap: "4px" }}>  <p className='mb-2'>Don't have a account?</p> <Link to="/Register" className='signupbtn'>Sign up</Link></div>
                 </div>
-                <button className="btn mt-3" onClick={login}>Sign in</button>
-            </form>
-            <div className="text-center fs-6">
-                <p>Don't have a account?</p> <Link to="/Register">Sign up</Link>
             </div>
         </div>
-        <ToastContainer />
 
     </>
 

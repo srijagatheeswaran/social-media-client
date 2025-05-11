@@ -191,7 +191,6 @@ export default function Search() {
                     <UserDetails user={selectedUser} /> {/* Pass selected user to UserDetails */}
                 </div>
             )}
-            <ToastContainer/>
         </>
     );
 }

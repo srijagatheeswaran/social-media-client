@@ -1,10 +1,11 @@
 .update {
     position: absolute;
     margin: 10px auto;
-    background-color: white;
+    background-color: #1e2738;
     transform: translatey(-1000px);
     height: max-content;
     width: 50%;
+    height: 400px;
     padding: 20px;
     z-index: 1;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -23,6 +24,7 @@
     align-items: center;
     gap: 10px;
     position: relative;
+    height: 100%;
 }
 
 .bi-x {
@@ -44,8 +46,12 @@
     /* margin: 10px 0; */
     outline: none;
     width: 80%;
-    padding: 5px;
+    padding: 5px 10px;
     border: none;
+    color: white;
+    background-color: #273248;
+    border-radius: 5px;
+    /* padding: 5 10px; */
     box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
 }
 

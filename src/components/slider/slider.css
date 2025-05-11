@@ -1,5 +1,5 @@
 .slider {
-    background-color: white;
+    background-color: #121212;
     width: 100%;
     height: 50px;
     display: flex;
@@ -8,6 +8,7 @@
     position: fixed;
     bottom: 0;
     left: 0;
+    color:white;
 }
 
 .slider div {
@@ -27,8 +28,8 @@
 }
 
 .slider div:hover i,.slider div:hover p {
-    color: blue;
-    text-shadow: 1px 1px 1px rgba(23, 6, 255, 0.747);
+    color: rgba(42, 141, 255, 0.8);
+    /* box-shadow: 0 0 8px rgba(66, 124, 192, 0.8); */
 
 
 }
