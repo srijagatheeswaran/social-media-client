@@ -3,34 +3,36 @@ import Home from './components/home/home';
 import Login from './components/login/Login';
 import Profile from './components/profile/profile';
 import Register from './components/register/Register';
-import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Search from './components/search/search';
 import Chat from './components/Chat/chat';
+import Otp from './components/otp/otp';
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import { ToastProvider } from './context/toastContext';
 import { ToastContainer } from "react-toastify";
-import Otp from './components/otp/otp'
-
+import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
-  return (<>
+  return (
     <BrowserRouter>
       <ToastProvider>
-        <Routes>
-          <Route path="/Login" element={<Login />} />
-          <Route path="/Register" element={<Register />} />
-          <Route path="/Home" element={<Home />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/otp-verification" element={<Otp />} />
-        </Routes>
-
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/otp-verification" element={<Otp />} />
+          </Routes>
+          <ToastContainer position="top-right" autoClose={3000} theme="dark" />
+        </AuthProvider>
       </ToastProvider>
-      <ToastContainer position="top-right" autoClose={3000} theme="dark" />
-
-    </BrowserRouter>
-  </>
+    </BrowserRouter >
   );
 }
 

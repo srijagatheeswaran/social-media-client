@@ -1,72 +1,50 @@
 .search {
     position: relative;
-    width: 90%; 
-    margin: 0 auto; 
-    margin-top: 20px;
-
+    width: 90%;
+    margin: 0 auto;
 }
 
 .search input {
-    width: 100%; 
-    padding: 10px; 
-    border: 1px solid #ccc; 
-    border-radius: 4px; 
-    font-size: 16px; 
-    transition: border-color 0.3s; 
+    width: 100%;
+    /* padding: 8px; */
+    font-size: 16px;
+    color:#638acd;
     outline: none;
-}
-/* .search{
-    width:100%;
-    height:200px;
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    position: relative;
-}
-.search input{
-    width: 50%;
-    height: 30px;
-    outline: none;
-    box-shadow: 0 0 5pt 0.5pt #D3D3D3;
+    border-radius: 5px;
+    padding: 8px 10px;
+    background-color: #1e2738;
     border: none;
-    padding: 18px 10px;
-    border-radius: 3px;
+    font-size: 15px;
 }
-.search input[type=text]:focus {
-    box-shadow: 0 0 5pt 2pt #D3D3D3;
-} */
-.search ul {
-    position: absolute; 
-    top: 100%; 
+.search input::placeholder {
+    color: #638acd;
+    opacity: 1;  
+}
+
+
+.dropdown {
+    position: absolute;
+    top: 100%;
     left: 0;
     right: 0;
-    margin: 0; 
-    padding: 0; 
-    list-style-type: none;  
-    border: 1px solid #ccc;  
-    border-radius: 4px; 
-    max-height: 200px;  
-    overflow: scroll; 
-    background-color: white; 
-    z-index: 1; 
+    background: #222;
+    border: 1px solid #444;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0;
 }
 
-.search li {
-    padding: 10px; 
-    cursor: pointer; 
-    transition: background-color 0.2s; 
+.dropdown li {
+    padding: 10px;
+    cursor: pointer;
+    color: white;
+    list-style-type: none;
 }
 
-.search li:hover {
-    background-color: #f0f0f0; 
+.dropdown li.highlighted {
+    background: #333;
 }
-.search li.highlighted {
-    background-color: #f0f0f0; /* Change background for highlighted item */
-    color: #007bff; /* Change text color for highlighted item */
-}
-@media (max-width:650px){
-    .search input{
-        width: 100%;
-    }
-
+.search-container{
+    margin-top: 50px;
 }

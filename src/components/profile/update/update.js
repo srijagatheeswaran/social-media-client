@@ -3,8 +3,10 @@ import "./update.css";
 import { useToast } from "../../../context/toastContext";
 import { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
+import customFetch from "../../../api";
 
-export default function Update({ showUpdateHandle, addClass, data }) {
+
+export default function Update({ showUpdateHandle, addClass, data ,fetchProfile }) {
     const [input, setInput] = useState({
         name: data?.name || "",
         gender: data?.gender || "",
@@ -17,7 +19,7 @@ export default function Update({ showUpdateHandle, addClass, data }) {
             gender: data?.gender || "",
             bio: data?.bio || "",
         });
-    }, [data]); 
+    }, [data]);
 
     const [loader, setLoader] = useState(false);
     let Toaster = useToast();
@@ -29,12 +31,44 @@ export default function Update({ showUpdateHandle, addClass, data }) {
             [name]: value
         }));
     }
+const handleUpdateUser = async (input, data) => {
+            // console.log(input); 
+            // console.log(data);
+
+            try {
+                const { status, body } = await customFetch(`profile/updateUser`, {
+                    method: "POST",
+                    body: JSON.stringify({ ...input, email: data.email }),
+                });
+
+                if (status === 200) {
+                    Toaster("User updated successfully", "success");
+                    setLoader(false);
+                    showUpdateHandle('update');
+                    fetchProfile(); 
+                } else {
+                    Toaster(body?.message || "Failed to update user", "error");
+                }
+            } catch (error) {
+                console.error("Update error:", error);
+                Toaster("Something went wrong", "error");
+            }
+        };
+    const Update = () => {
+        if (!input.name.trim()) {
+            Toaster("Please enter your name", "error");
+            return;
+        } else {
+            handleUpdateUser(input, data);
+        }
+
+    }
 
     return (
         <>
             <div className={`update ${addClass ? "show" : ""}`}>
                 <div className="box">
-                    <i className="bi bi-x" onClick={showUpdateHandle}></i>
+                    <i className="bi bi-x remove_btn" onClick={showUpdateHandle}></i>
                     <h3>Update Details</h3>
                     <input
                         type="text"
@@ -56,7 +90,7 @@ export default function Update({ showUpdateHandle, addClass, data }) {
                         value={input.bio}
                     />
 
-                    <button className="btn btn-success">Update</button>
+                    <button className="btn btn-success" onClick={Update}>Update</button>
                 </div>
                 {loader && <Loader />}
             </div>

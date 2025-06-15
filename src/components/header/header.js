@@ -1,21 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Post from "../post/post";
 import "./header.css"
 import { useNavigate } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 import { useToast } from "../../context/toastContext";
+import { useAuth } from "../../context/AuthContext";
 
 
 
 
-function Header() {
+function Header({ fetchPosts }) {
     const [addClass, setAddClass] = useState(false);
-    const [showUpdate, setShowUpdate] = useState(false)
+    const [showUpdate, setShowUpdate] = useState(false);
+    const { isAuthenticated, loading,verifyAuth } = useAuth();
+
     const navigate = useNavigate()
-
+verifyAuth();
     const Toaster = useToast();
-    let isAuthenticated = true;
-
+ if (loading) return null;
     function showUpdateHandle(e) {
         if (isAuthenticated) {
 
@@ -25,11 +27,13 @@ function Header() {
             }
         }
         else {
-            Toaster('error', 'Please Login')
+            console.log("Please Login")
+            Toaster('Please Login', 'error')
         }
 
     }
 
+    // if (loading) return <div className="loading text-light text-center">Loading...</div>;
     return <>
         <div className="header px-3">
             <h1>logo</h1>
@@ -43,7 +47,7 @@ function Header() {
             </div>
 
         </div>
-        {/* <Post addClass={addClass} showUpdateHandle={showUpdateHandle} /> */}
+        <Post addClass={addClass} setAddClass={setAddClass} fetchPosts={fetchPosts} showUpdateHandle={showUpdateHandle} />
     </>
 }
 export default Header;

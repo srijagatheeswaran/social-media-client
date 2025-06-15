@@ -1,23 +1,49 @@
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import Slider from "../slider/slider";
-import "./search.css";
-import React, { useState, useCallback, useEffect,useRef  } from "react";
-import debounce from "lodash.debounce";
-import Loader from "../loader/loader"
+import { useToast } from "../../context/toastContext";
+import { useNavigate } from "react-router-dom";
+import customFetch from "../../api";
+import Loader from "../loader/loader";
+// import Header from "../header/header";
+import { useAuth } from "../../context/AuthContext";
 import UserDetails from "../UserDetails/UserDetails";
-import { ToastContainer, toast, Flip } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
+
+// import UserDetails from "../userDetails/userDetails"; // assumed existing
+import "./search.css";
+
+// Debounce function
+const debounce = (fn, delay) => {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn(...args), delay);
+    };
+};
 
 export default function Search() {
+    const { isAuthenticated, loading } = useAuth();
+    const Toaster = useToast();
+    const navigate = useNavigate();
     const [inputValue, setInputValue] = useState("");
     const [results, setResults] = useState([]);
-    const [highlightedIndex, setHighlightedIndex] = useState(-1); // Index of the highlighted item
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [loader, setLoader] = useState(false)
+    const [loader, setLoader] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
-    const loggedInUserEmail =localStorage.getItem("email")
-    const searchRef = useRef(null);
+    const [highlightedIndex, setHighlightedIndex] = useState(-1);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const abortControllerRef = useRef(null);
 
+    useEffect(() => {
+        
+        if (!loading && isAuthenticated) {
+            return;
+        } else if (!loading && !isAuthenticated) {
+            navigate("/login");
+        }
+
+    }, [loading]);
+
+   
     const fetchUsernames = useCallback(
         debounce(async (query) => {
             if (!query.trim()) {
@@ -26,6 +52,7 @@ export default function Search() {
                 setLoader(false);
                 return;
             }
+
             if (abortControllerRef.current) {
                 abortControllerRef.current.abort();
             }
@@ -35,28 +62,23 @@ export default function Search() {
 
             setLoader(true);
             try {
-                const response = await fetch(
-                    `http://localhost:3000/api/users/search?query=${query}&email=${loggedInUserEmail}`,
-                    { signal: controller.signal }
-                );
+                const { status, body } = await customFetch(`profile/search?query=${query}`, {
+                    method: "GET",
+                    signal: controller.signal,
+                });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.length > 0) {
-                        setResults(data);
-                        setIsDropdownOpen(true);
-                    }
-                    else {
-                        setResults([]);
-                        notifiyErr('No users found')
-                        setIsDropdownOpen(false);
-                    }
+                if (status === 200) {
+                    // console.log("Fetched Usernames:", body.users);
+                    setResults(body.users);
+                    setIsDropdownOpen(true);
                 } else {
-                    console.error("Error fetching usernames:", response.statusText);
+                    setResults([]);
+                    Toaster("No users found", "error");
                 }
             } catch (error) {
-                if (error.name !== 'AbortError') {
+                if (error.name !== "AbortError") {
                     console.error("Error fetching usernames:", error);
+                    Toaster("Something went wrong", "error");
                 }
             } finally {
                 setLoader(false);
@@ -68,99 +90,48 @@ export default function Search() {
     const handleChange = (e) => {
         const value = e.target.value;
         setInputValue(value);
-
-        if (!value.trim()) {
-            setResults([]);
-            setIsDropdownOpen(false);
-            fetchUsernames(value);
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort(); 
-            }
-        } else {
-            fetchUsernames(value); 
-        }
+        setHighlightedIndex(-1);
+        fetchUsernames(value);
     };
 
     const handleKeyDown = (e) => {
         if (e.key === "ArrowDown") {
-            setHighlightedIndex((prevIndex) =>
-                prevIndex < results.length - 1 ? prevIndex + 1 : prevIndex
-            );
+            setHighlightedIndex((prev) => (prev < results.length - 1 ? prev + 1 : prev));
         } else if (e.key === "ArrowUp") {
-            setHighlightedIndex((prevIndex) =>
-                prevIndex > 0 ? prevIndex - 1 : prevIndex
-            );
+            setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : prev));
         } else if (e.key === "Enter") {
             if (highlightedIndex >= 0 && highlightedIndex < results.length) {
-                // handleSelect(results[highlightedIndex].username);
-                handleSelect(results[highlightedIndex])
+                handleSelect(results[highlightedIndex]);
             }
         }
     };
 
     const handleSelect = (user) => {
+        // console.log("Selected User:", user);
         setSelectedUser(user);
         setInputValue(user.username);
         setResults([]);
-        setHighlightedIndex(-1);
         setIsDropdownOpen(false);
     };
+
     const handleBackToSearch = () => {
         setSelectedUser(null);
-        setInputValue("")
+        setInputValue("");
     };
-    // useEffect(()=>{
-    //     if(inputValue===""){
-    //         setIsDropdownOpen
-
-    //     }
-
-    // },[inputValue])
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (searchRef.current && !searchRef.current.contains(event.target)) {
-                setIsDropdownOpen(false);
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
-    function notifiyErr(err) {
-        toast.error(err, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            theme: "colored",
-            transition: Flip,
-        });
-    }
-    function notifiysuccess(data) {
-        toast.success(data, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: 0,
-            theme: "colored",
-            transition: Flip,
-        });
+     if (loading) {
+        return <Loader />;
     }
 
     return (
         <>
-            {loader ? <Loader /> : null}
+            {/* <Header isAuthenticated={isAuthenticated} /> */}
+
+            {loader && <Loader />}
             {!selectedUser ? (
-                <div>
-                    <div className="search" ref={searchRef} >
+                <div className="search-container">
+                    {/* <h1>Search Users</h1> */}
+
+                    <div className="search">
                         <input
                             type="text"
                             value={inputValue}
@@ -168,27 +139,30 @@ export default function Search() {
                             onKeyDown={handleKeyDown}
                             placeholder="Search username"
                         />
-                        {isDropdownOpen && results.length > 0 && (
-                            <ul>
-                                {loader ? <Loader /> : null}
-                                {results.map((user, index) => (
-                                    <li
-                                        key={user._id}
-                                        onClick={() => handleSelect(user)}
-                                        className={highlightedIndex === index ? "highlighted" : ""}
-                                    >
-                                        {user.username}
-                                    </li>
-                                ))}
-                            </ul>
+                        {isDropdownOpen && (
+                            <ol className="dropdown">
+                                {results.length > 0 ? (
+                                    results.map((user, index) => (
+                                        <li
+                                            key={user._id}
+                                            onClick={() => handleSelect(user)}
+                                            className={highlightedIndex === index ? "highlighted" : ""}
+                                        >
+                                            {user.username}
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li className="no-results">No results found</li>
+                                )}
+                            </ol>
                         )}
                     </div>
                     <Slider />
                 </div>
             ) : (
-                <div>
-                    <button onClick={handleBackToSearch}>Back to Search</button>
-                    <UserDetails user={selectedUser} /> {/* Pass selected user to UserDetails */}
+                <div className="user-profile-box">
+                    <button onClick={handleBackToSearch} className="btn btn-primary ms-2">Back to Search</button>
+                    <UserDetails user={selectedUser} /> 
                 </div>
             )}
         </>

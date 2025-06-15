@@ -1,0 +1,55 @@
+/* Scrollable container */
+.container.my-5 {
+    max-height: calc(100vh - 150px); /* Adjust based on Header + Slider height */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 15px; /* for scrollbar spacing */
+}
+
+/* Smooth scroll and better UX */
+.container.my-5::-webkit-scrollbar {
+    width: 6px;
+}
+
+.container.my-5::-webkit-scrollbar-thumb {
+    background-color: #007bff;
+    border-radius: 3px;
+}
+
+.container.my-5::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Card styling */
+.custom-post-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    transition: box-shadow 0.3s ease;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.custom-post-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.custom-post-card img {
+    height: 220px;
+    object-fit: cover;
+}
+
+.custom-post-card .card-body {
+    padding: 1rem;
+}
+
+/* Pagination style */
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.pagination .page-link {
+    color: #007bff;
+    cursor: pointer;
+}

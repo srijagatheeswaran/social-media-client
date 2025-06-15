@@ -5,36 +5,59 @@ import { useState, useEffect } from 'react';
 import Update from "./update/update";
 import Loader from "../loader/loader";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/toastContext";
-import Post from "../../components/post/post";
-import BASE_URL from "../../config";
 import customFetch from "../../api";
-
+import PostShow from "../post_show/post_show";
+import Popup from '../Popup/Popup';
 
 
 
 
 
 export default function Profile() {
-
-    const { isAuthenticated, checkAuth } = useAuth();
-    let Toaster = useToast()
-    const navigate = useNavigate()
+    let Toaster = useToast();
+    const navigate = useNavigate();
     const [addClass, setAddClass] = useState(false);
+    const [posts, setPostdata] = useState([]);
     const [profileData, setProfileData] = useState({});
-    const [error, setError] = useState(null);
     const [showUpdate, setShowUpdate] = useState(false)
     const [imageUrl, setImageUrl] = useState(
         "https://www.pngfind.com/pngs/b/110-1102775_download-empty-profile-hd-png-download.png"
     );
     // const [imageData, setImageData] = useState(null);
     const [loader, setloader] = useState(false)
+    const [postloader, setPostloader] = useState(false)
     const userEmail = localStorage.getItem("email")
     const token = localStorage.getItem("token")
+    const { isAuthenticated, loading } = useAuth();
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupConfig, setPopupConfig] = useState(null);
 
+    const [selectedPost, setSelectedPost] = useState(null);
+
+    const handlePostClick = (post) => {
+        setSelectedPost(post);
+    };
+
+    const handleClose = () => {
+        setSelectedPost(null);
+    };
+
+
+    useEffect(() => {
+        if (!loading && isAuthenticated) {
+            fetchProfile();
+            fetchPosts();
+        } else if (!loading && !isAuthenticated) {
+            navigate("/login");
+        }
+    }, [loading, isAuthenticated, navigate]);
+
+    if (loading) {
+        return <Loader />;
+    }
 
     const fetchProfile = async () => {
         try {
@@ -46,6 +69,7 @@ export default function Profile() {
             if (status === 200) {
                 // console.log("Profile Data:", body);
                 setProfileData(body);
+                // console.log(profileData);
                 setImageUrl(body.image || imageUrl);
             }
             else {
@@ -61,9 +85,36 @@ export default function Profile() {
         }
     };
 
-    useEffect(() => {
-        fetchProfile();
-    }, []);
+    const fetchPosts = async () => {
+        setPostloader(true)
+        try {
+            const { status, body } = await customFetch("posts/list", {
+                method: "GET",
+            });
+
+            if (status === 200) {
+                // console.log('post fetched')
+                // console.log("Profile Data:", body);
+                setPostdata(body.Posts);
+                // console.log(posts);
+
+            }
+            else {
+                console.error("Failed to fetch posts:", body.message);
+                Toaster(body.message || "Failed to load posts", "error");
+            }
+        }
+        catch (error) {
+            console.error("Failed to fetch profile:", error);
+            Toaster(error.message || "Network error", "error");
+        } finally {
+            setPostloader(false)
+
+        }
+
+    }
+
+
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
@@ -133,32 +184,86 @@ export default function Profile() {
 
     }
     function Logout() {
-        navigate("/login")
-        localStorage.removeItem("email")
-        localStorage.removeItem("token")
+        setPopupConfig({
+            title: "Logout",
+            message: "This action cannot be undone. Proceed?",
+            confirmText: "Delete",
+            cancelText: "Cencel",
+            onConfirm: () => {
+                setPostloader(true);
+                setPostloader(false);
+                setShowPopup(false);
+                navigate("/login")
+                localStorage.removeItem("email")
+                localStorage.removeItem("token")
+            },
+            onCancel: () => setShowPopup(false)
+        });
+        setShowPopup(true);
+    }
+    function handleRemove(id) {
+
+        setPopupConfig({
+            title: "Delete Post",
+            message: "This action cannot be undone. Proceed?",
+            confirmText: "Delete",
+            cancelText: "Cencel",
+            onConfirm: () => {
+                // console.log("Post deleted");
+                setPostloader(true)
+                customFetch(`posts/delete`, {
+                    method: "DELETE",
+                    body: JSON.stringify({ post_id: id }),
+                })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            Toaster("Post removed successfully", "success");
+                            fetchPosts();
+                            // console.log(posts);
+                        } else {
+                            Toaster("Failed to remove post", "error");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error removing post:", error);
+                        Toaster(error.message || "Network error", "error");
+                    })
+                    .finally(() => {
+                        setPostloader(false);
+                    });
+                setShowPopup(false);
+            },
+            onCancel: () => setShowPopup(false)
+        });
+        setShowPopup(true);
+
     }
 
 
     return <>
-        {/* {isAuthenticated ? */}
-        <>
-            <Header isAuthenticated={isAuthenticated} />
+        <Header isAuthenticated={isAuthenticated} fetchPosts={fetchPosts} />
+        <div className="profile-container">
             <div className="profile">
-                <Update showUpdateHandle={showUpdateHandle} addClass={addClass} data={profileData} />
+                <Update showUpdateHandle={showUpdateHandle} fetchProfile={fetchProfile} addClass={addClass} data={profileData} />
                 {/* {showUpdate ? <Update showUpdateHandle={showUpdateHandle} addClass={addClass}  /> : null} */}
                 <button className="btn edit" onClick={showUpdateHandle}><span>Edit</span><i className="fa-solid fa-user-pen"></i></button>
                 <button className="btn btn-danger" onClick={Logout} ><span>Logout</span><i className="bi bi-box-arrow-right"></i> </button>
-                <div className="imgDiv">
-                    <label htmlFor="imgInput"><i className="bi bi-upload"></i></label>
-                    <input type="file" accept="image/*" id="imgInput" onChange={handleImageChange} />
-                    <img src={imageUrl} />
-                </div>
-                <div className="details">
-                    <div className="h3 name">{profileData.name}</div>
-                    <div className="p email">{profileData.email}</div>
-                    <div className="sub-detail">
-                        <p className="gender"><strong>Gender : </strong>{profileData.gender}</p>
-                        <p className="bio"><strong>Bio : </strong>{profileData.bio}</p>
+                <div className="profile-contant-box">
+                    <div className="profile-img-box col-6">
+                        <div className="imgDiv">
+                            <label htmlFor="imgInput"><i className="bi bi-upload"></i></label>
+                            <input type="file" accept="image/*" id="imgInput" onChange={handleImageChange} />
+                            <img src={imageUrl} />
+                        </div>
+                    </div>
+                    <div className="details col-6">
+                        <div className="h6 name">{profileData.name}</div>
+                        <div className="p email">{profileData.email}</div>
+                        <div className="sub-detail">
+                            <p className="gender">Gender : {profileData.gender}</p>
+                            <p className="bio">Bio : {profileData.bio}</p>
+
+                        </div>
                     </div>
                 </div>
                 <div className="AccountDetails">
@@ -177,9 +282,46 @@ export default function Profile() {
 
                 </div>
                 {/* <Post/> */}
-                {loader ? <Loader /> : null}
+
+
             </div>
-            <Slider /> </>
-        {/* : ""} */}
+            <div className="post-box">
+
+                <h6 className="post-head text-light text-center">Posts</h6>
+                <div className="post-list">
+                    <div className="posts-wrapper">
+                        {posts.length > 0 ? (
+                            posts.map((item, index) => (
+                                <div className="post" key={index} onClick={() => handlePostClick(item)}>
+                                    <div className="post-img-wrapper">
+                                        <img src={item.media} alt="Post" className="post-img" />
+                                        <button className="remove-btn" onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleRemove(item._id);
+                                        }}>
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="no-posts">
+                                <p className="text-light text-center mt-2">No Posts Available</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+            {postloader ? <Loader /> : null}
+
+        </div>
+        <Slider />
+        {selectedPost && (
+
+            <PostShow post={selectedPost} onClose={() => setSelectedPost(null)} />
+
+        )}
+        <Popup isOpen={showPopup} config={popupConfig} />
+        {loader ? <Loader /> : null}
     </>
 }

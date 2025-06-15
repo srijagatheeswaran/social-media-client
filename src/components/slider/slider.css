@@ -9,6 +9,7 @@
     bottom: 0;
     left: 0;
     color:white;
+        z-index: 1;
 }
 
 .slider div {
