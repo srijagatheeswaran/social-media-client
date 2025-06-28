@@ -52,9 +52,9 @@ function Home() {
                 ) : posts.length === 0 ? (
                     <p className="text-center text-muted">No posts available.</p>
                 ) : (
-                    <div className="row">
+                    <div className="row row-box">
                         {posts.map((post) => (
-                            <div key={post._id} className="col-md-4 mb-4">
+                            <div key={post._id} className="col-md-4 post-main-box mb-4">
                                 <div className="card custom-post-card h-100">
                                     <img
                                         src={post.media}

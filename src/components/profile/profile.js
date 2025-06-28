@@ -11,6 +11,9 @@ import { useToast } from "../../context/toastContext";
 import customFetch from "../../api";
 import PostShow from "../post_show/post_show";
 import Popup from '../Popup/Popup';
+import ImageCropper from '../ImageCropper';
+import { useRef } from 'react';
+
 
 
 
@@ -26,14 +29,18 @@ export default function Profile() {
     const [imageUrl, setImageUrl] = useState(
         "https://www.pngfind.com/pngs/b/110-1102775_download-empty-profile-hd-png-download.png"
     );
+    const fileInputRef = useRef(null);
     // const [imageData, setImageData] = useState(null);
     const [loader, setloader] = useState(false)
+    const [cropImage, setCropImage] = useState(null);
+
     const [postloader, setPostloader] = useState(false)
     const userEmail = localStorage.getItem("email")
     const token = localStorage.getItem("token")
     const { isAuthenticated, loading } = useAuth();
     const [showPopup, setShowPopup] = useState(false);
     const [popupConfig, setPopupConfig] = useState(null);
+
 
     const [selectedPost, setSelectedPost] = useState(null);
 
@@ -114,54 +121,57 @@ export default function Profile() {
 
     }
 
+    //     const handleImageChange = (event) => {
+    //     const file = event.target.files[0];
 
+    //     if (file) {
 
+    //         const previewUrl = URL.createObjectURL(file);
+    //         setImageUrl(previewUrl); 
+    // console.log("Selected file:", file);
+    //         handleUpload(file); 
+    //     }
+    // };
     const handleImageChange = (event) => {
         const file = event.target.files[0];
-
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const dataUrl = reader.result;
-                setImageUrl(dataUrl);
-                handleUpload(dataUrl);
-            };
-            reader.readAsDataURL(file);
+            const previewUrl = URL.createObjectURL(file);
+            setCropImage(previewUrl);
         }
     };
-    // const handleUpload = (dataUrl) => {
-    //     setloader(true)
+    const handleCropComplete = (croppedFile) => {
+        setCropImage(null); // hide cropper
+        const previewUrl = URL.createObjectURL(croppedFile);
+        setImageUrl(previewUrl); // preview cropped
 
-    //     fetch(`${BASE_URL}/uploadImage`, {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify({ image: dataUrl, email: userEmail })
-    //     })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             console.log('Image uploaded successfully:', data);
-    //             setImageUrl(dataUrl);
-    //             Toaster('Image uploaded successfully', 'success')
-    //             setloader(false)
+        handleUpload(croppedFile); // upload cropped
+    };
 
-    //         })
-    //         .catch(error => {
-    //             console.error('Error uploading image:', error);
-    //             setloader(false)
-    //             Toaster(error, "error")
-    //         });
-    // };
     const handleUpload = async (dataUrl) => {
+        console.log("Uploading image:", dataUrl);
         try {
             setloader(true);
 
+            // const { status, body } = await customFetch("profile/uploadImage", {
+
+            //     method: "POST",
+            //     body: JSON.stringify({ image: dataUrl, email: userEmail }),
+            //     headers: {
+            //         "Content-Type": "multipart/form-data",
+            //     },
+            // });
+            const formData = new FormData();
+            formData.append("image", dataUrl); // if it's a file, pass the file object
+            formData.append("email", userEmail);
+
             const { status, body } = await customFetch("profile/uploadImage", {
                 method: "POST",
-                body: JSON.stringify({ image: dataUrl, email: userEmail }),
+                body: formData, 
             });
 
             if (status === 200) {
-                setImageUrl(dataUrl);
+                // setImageUrl(dataUrl);
+                fetchProfile();
                 Toaster("Image uploaded successfully", "success");
             } else {
                 Toaster(body.message || "Image upload failed", "error");
@@ -188,7 +198,7 @@ export default function Profile() {
             title: "Logout",
             message: "This action cannot be undone. Proceed?",
             confirmText: "Delete",
-            cancelText: "Cencel",
+            cancelText: "Cancel",
             onConfirm: () => {
                 setPostloader(true);
                 setPostloader(false);
@@ -207,7 +217,7 @@ export default function Profile() {
             title: "Delete Post",
             message: "This action cannot be undone. Proceed?",
             confirmText: "Delete",
-            cancelText: "Cencel",
+            cancelText: "Cancel",
             onConfirm: () => {
                 // console.log("Post deleted");
                 setPostloader(true)
@@ -240,8 +250,16 @@ export default function Profile() {
     }
 
 
+
     return <>
         <Header isAuthenticated={isAuthenticated} fetchPosts={fetchPosts} />
+        {cropImage && (
+            <ImageCropper
+                imageSrc={cropImage}
+                onCancel={() => setCropImage(null)}
+                onCropComplete={handleCropComplete}
+            />
+        )}
         <div className="profile-container">
             <div className="profile">
                 <Update showUpdateHandle={showUpdateHandle} fetchProfile={fetchProfile} addClass={addClass} data={profileData} />
@@ -252,7 +270,14 @@ export default function Profile() {
                     <div className="profile-img-box col-6">
                         <div className="imgDiv">
                             <label htmlFor="imgInput"><i className="bi bi-upload"></i></label>
-                            <input type="file" accept="image/*" id="imgInput" onChange={handleImageChange} />
+                            {/* <input type="file" accept="image/*" id="imgInput" onChange={handleImageChange} /> */}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                id="imgInput"
+                                ref={fileInputRef}
+                                onChange={handleImageChange}
+                            />
                             <img src={imageUrl} />
                         </div>
                     </div>

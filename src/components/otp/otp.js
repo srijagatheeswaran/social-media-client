@@ -58,6 +58,7 @@ const OTPVerification = () => {
         setLoader(false);
         if (status === 200) {
           Toaster(body.message || "OTP Verified Successfully!", "success");
+          localStorage.setItem("token", body.token);
           navigate("/home");
         } else if (status === 400) {
           Toaster(body.message || "Invalid OTP", "error");

@@ -34,8 +34,8 @@
 }
 
 .custom-post-card img {
-    height: 220px;
-    object-fit: cover;
+    height: 300px;
+    /* object-fit: cover; */
 }
 
 .custom-post-card .card-body {
@@ -52,4 +52,10 @@
 .pagination .page-link {
     color: #007bff;
     cursor: pointer;
+}
+.post-main-box{
+    width: 350px;
+}
+.row-box{
+    justify-content: center;
 }

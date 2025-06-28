@@ -201,7 +201,7 @@
 
 .post-img {
     width: 250px;
-    height: 160px;
+    height: 250px;
     border-radius: 10px;
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -336,6 +336,9 @@
 }
 
 @media (max-width:425px) {
+    .profile {
+        width: 90%;
+    }
     .imgDiv label {
         bottom: 40px;
         right: 32px;

@@ -5,11 +5,14 @@ const customFetch = async (endpoint, options = {}) => {
 
     try {
         let token = localStorage.getItem("token") || "";
-        let email = localStorage.getItem("email") || ""
+        let email = localStorage.getItem("email") || "";
+
+        const isFormData = options.body instanceof FormData;
+        
         const response = await fetch(`${BASE_URL}/${endpoint}`, {
             ...options,
                 headers: {
-                    "Content-Type": "application/json",
+                     ...(isFormData ? {} : { "Content-Type": "application/json" }),
                     token: token,
                     Email: email,
                     ...options.headers
