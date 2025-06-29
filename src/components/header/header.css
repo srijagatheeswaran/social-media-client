@@ -10,8 +10,8 @@
     box-shadow: 0 0 8px rgba(66, 124, 192, 0.8);
  
 }
-.header h1{
-    font-size: 20px;
+.header .logo-text{
+    font-size: 16px;
     margin: 0;
 }
 .Top_box{

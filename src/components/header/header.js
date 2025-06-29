@@ -8,7 +8,6 @@ import { useAuth } from "../../context/AuthContext";
 
 
 
-
 function Header({ fetchPosts }) {
     const [addClass, setAddClass] = useState(false);
     const [showUpdate, setShowUpdate] = useState(false);
@@ -36,7 +35,9 @@ verifyAuth();
     // if (loading) return <div className="loading text-light text-center">Loading...</div>;
     return <>
         <div className="header px-3">
-            <h1>logo</h1>
+            {/* <h1>logo</h1> */}
+            <h5 className="logo-text">Social Media</h5>
+            {/* <h1><img className="logo-img" src="/logo.png"/></h1> */}
             <div className="Top_box">
                 {isAuthenticated ? null : <button className="btn btn-primary" onClick={() => navigate("/login")}>Login</button>}
                 <div className="mx-2" onClick={showUpdateHandle}>
