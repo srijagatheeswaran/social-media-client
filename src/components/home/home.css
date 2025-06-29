@@ -59,3 +59,16 @@
 .row-box{
     justify-content: center;
 }
+@media (max-width: 768px) {
+    .container.my-5 {
+        max-height: calc(100vh - 120px);
+    }
+    .post-main-box{
+        width: 100%;
+    }
+    .row-box{
+        flex-direction: column;
+        align-items: center;
+    }
+    
+}
