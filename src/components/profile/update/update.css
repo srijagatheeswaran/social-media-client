@@ -7,7 +7,7 @@
     width: 50%;
     height: 300px;
     padding: 20px;
-    z-index: 1;
+    z-index: 1000;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     transition: all 0.5s linear;
     opacity: 0;

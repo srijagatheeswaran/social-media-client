@@ -67,16 +67,17 @@
 @media (max-width: 768px) {
     .custom-post-card {
         height: auto;
+        width: 100%;
     }
 
     .container.my-5 {
         max-height: calc(100vh - 120px);
-        padding-bottom: 70px;
+        padding-bottom: 85px;
     }
 
 
     .post-main-box {
-        width: 280px;
+        width: 350px;
     }
 
     .row-box {
