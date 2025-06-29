@@ -1,9 +1,11 @@
 /* Scrollable container */
 .container.my-5 {
-    max-height: calc(100vh - 150px); /* Adjust based on Header + Slider height */
+    max-height: calc(100vh - 150px);
+    /* Adjust based on Header + Slider height */
     overflow-y: auto;
     overflow-x: hidden;
-    padding-right: 15px; /* for scrollbar spacing */
+    padding-right: 15px;
+    /* for scrollbar spacing */
 }
 
 /* Smooth scroll and better UX */
@@ -53,22 +55,33 @@
     color: #007bff;
     cursor: pointer;
 }
-.post-main-box{
+
+.post-main-box {
     width: 350px;
 }
-.row-box{
+
+.row-box {
     justify-content: center;
 }
+
 @media (max-width: 768px) {
+    .custom-post-card {
+        height: auto;
+    }
+
     .container.my-5 {
         max-height: calc(100vh - 120px);
+        padding-bottom: 70px;
     }
-    .post-main-box{
-        width: 100%;
+
+
+    .post-main-box {
+        width: 280px;
     }
-    .row-box{
+
+    .row-box {
         flex-direction: column;
         align-items: center;
     }
-    
+
 }

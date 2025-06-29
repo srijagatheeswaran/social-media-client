@@ -51,8 +51,9 @@
     padding-top: 1rem;
     padding-bottom: 1rem;
 }
+
 .search-post::-webkit-scrollbar {
-  width: 6px;
+    width: 6px;
 }
 
 
@@ -97,21 +98,21 @@
 }
 
 @media (max-width: 450px) {
-    .search {
-        width: 100%;
-    }
-
     .search input {
         font-size: 14px;
         padding: 6px 8px;
     }
 
     .search-post-main-box {
-        width: 100% !important;
+        width: 100px !important;
     }
 
     .search-post {
-        height: calc(100vh - 120px); 
+        height: calc(100vh - 120px);
+        padding-bottom: 80px !important;
     }
-    
+    .search-row-box {
+        gap: 20px;
+    }
+
 }
