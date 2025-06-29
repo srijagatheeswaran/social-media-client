@@ -186,28 +186,30 @@ export default function Search() {
                         )}
                     </div>
                     <div className="search-post">
-                        {loading ? (
-                            <div className="text-center my-5">
-                                <Loader />
-                            </div>
-                        ) : posts.length === 0 ? (
-                            <p className="text-center text-muted">No posts available.</p>
-                        ) : (
-                            <div className="row search-row-box">
-                                {posts.map((post) => (
-                                    <div key={post._id} className="col-md-4 search-post-main-box mb-4">
-                                        <div className="card search-custom-post-card h-100">
-                                            <img
-                                                src={post.media}
-                                                onClick={() => setSelectedPost(post)}
-                                                className="card-img-top"
-                                                alt={post.title}
-                                            />
+                        <div className="container">
+                            {loading ? (
+                                <div className="text-center my-5">
+                                    <Loader />
+                                </div>
+                            ) : posts.length === 0 ? (
+                                <p className="text-center text-muted">No posts available.</p>
+                            ) : (
+                                <div className="row search-row-box">
+                                    {posts.map((post) => (
+                                        <div key={post._id} className="col-md-4 search-post-main-box mb-4">
+                                            <div className="card search-custom-post-card h-100">
+                                                <img
+                                                    src={post.media}
+                                                    onClick={() => setSelectedPost(post)}
+                                                    className="card-img-top"
+                                                    alt={post.title}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <Slider />

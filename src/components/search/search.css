@@ -5,6 +5,10 @@
 
 }
 
+#root {
+    overflow: hidden;
+}
+
 /* .search-instructions {
     background-image: url('/public/for_search_page.png');
     background-size: contain;
@@ -32,19 +36,34 @@
     color: #638acd;
     opacity: 1;
 }
+
 .search-post-main-box {
     padding: 0 !important;
     margin: 0 !important;
     border: 0px !important;
     width: 200px !important;
 }
-.search-custom-post-card{
+
+.search-post {
+    height: calc(100vh - 160px);
+    /* Adjust height based on header/footer */
+    overflow-y: auto;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.search-post::-webkit-scrollbar {
+  width: 6px;
+}
+
+
+.search-custom-post-card {
     border: unset !important;
 
 }
-.search-row-box{
+
+.search-row-box {
     justify-content: center;
-    padding-top:30px ;
+    padding-top: 30px;
     gap: 10px;
 }
 
