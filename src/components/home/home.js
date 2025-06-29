@@ -5,6 +5,8 @@ import customFetch from "../../api";
 import { useToast } from "../../context/toastContext";
 import Loader from '../loader/loader';
 import "./home.css";
+import PostShow from "../post_show/post_show";
+
 
 function Home() {
     const [posts, setPosts] = useState([]);
@@ -12,6 +14,8 @@ function Home() {
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
     const Toaster = useToast();
+    const [selectedPost, setSelectedPost] = useState(null);
+
 
     const fetchPosts = async (page = 1, limit = 6) => {
         setLoading(true);
@@ -60,6 +64,8 @@ function Home() {
                                         src={post.media}
                                         className="card-img-top"
                                         alt={post.title}
+                                        onClick={() => setSelectedPost(post)}
+
                                     />
                                     <div className="card-body">
                                         <h5 className="card-title">{post.title}</h5>
@@ -95,7 +101,12 @@ function Home() {
                 )}
             </div>
             <Slider />
-
+            {selectedPost && (
+                <PostShow
+                    post={selectedPost}
+                    onClose={() => setSelectedPost(null)}
+                />
+            )}
         </>
     );
 }

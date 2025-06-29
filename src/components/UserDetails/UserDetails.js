@@ -70,7 +70,7 @@ const UserDetails = ({ user }) => {
         }
     };
 
-    if (!userInfo) return <div>Loading...</div>;
+    if (!userInfo) return <div className='text-light text-center'>Loading...</div>;
 
     return (
         <>

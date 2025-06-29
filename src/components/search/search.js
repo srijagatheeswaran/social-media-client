@@ -7,10 +7,12 @@ import Loader from "../loader/loader";
 // import Header from "../header/header";
 import { useAuth } from "../../context/AuthContext";
 import UserDetails from "../UserDetails/UserDetails";
+import PostShow from "../post_show/post_show";
 
 
 // import UserDetails from "../userDetails/userDetails"; // assumed existing
 import "./search.css";
+import Header from "../header/header";
 
 // Debounce function
 const debounce = (fn, delay) => {
@@ -24,6 +26,8 @@ const debounce = (fn, delay) => {
 export default function Search() {
     const { isAuthenticated, loading } = useAuth();
     const Toaster = useToast();
+    const [selectedPost, setSelectedPost] = useState(null);
+    const [page, setPage] = useState(1);
     const navigate = useNavigate();
     const [inputValue, setInputValue] = useState("");
     const [results, setResults] = useState([]);
@@ -32,18 +36,42 @@ export default function Search() {
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const abortControllerRef = useRef(null);
+    const [posts, setPosts] = useState([]);
+    const [totalPages, setTotalPages] = useState(1);
+    const fetchPosts = async (page = 1, limit = 6) => {
+        setLoader(true);
+        try {
+            const { status, body } = await customFetch(`posts?page=${page}&limit=${limit}`, {
+                method: "GET",
+            });
+
+            if (status === 200) {
+                setPosts(body.posts);
+                setTotalPages(body.totalPages);
+            } else {
+                Toaster("Failed to fetch posts", "error");
+            }
+        } catch (error) {
+            console.error("Fetch posts error:", error);
+            Toaster("Error loading posts", "error");
+        } finally {
+            setLoader(false);
+        }
+    };
 
     useEffect(() => {
-        
+
         if (!loading && isAuthenticated) {
+            fetchPosts(page);
             return;
         } else if (!loading && !isAuthenticated) {
             navigate("/login");
         }
 
-    }, [loading]);
 
-   
+    }, [loading, isAuthenticated, page]);
+
+
     const fetchUsernames = useCallback(
         debounce(async (query) => {
             if (!query.trim()) {
@@ -78,7 +106,7 @@ export default function Search() {
             } catch (error) {
                 if (error.name !== "AbortError") {
                     console.error("Error fetching usernames:", error);
-                    Toaster("Something went wrong", "error");
+                    // Toaster("Something went wrong", "error");
                 }
             } finally {
                 setLoader(false);
@@ -118,13 +146,13 @@ export default function Search() {
         setSelectedUser(null);
         setInputValue("");
     };
-     if (loading) {
+    if (loading) {
         return <Loader />;
     }
 
     return (
         <>
-            {/* <Header isAuthenticated={isAuthenticated} /> */}
+            <Header />
 
             {loader && <Loader />}
             {!selectedUser ? (
@@ -157,13 +185,44 @@ export default function Search() {
                             </ol>
                         )}
                     </div>
+                    <div className="search-post">
+                        {loading ? (
+                            <div className="text-center my-5">
+                                <Loader />
+                            </div>
+                        ) : posts.length === 0 ? (
+                            <p className="text-center text-muted">No posts available.</p>
+                        ) : (
+                            <div className="row search-row-box">
+                                {posts.map((post) => (
+                                    <div key={post._id} className="col-md-4 search-post-main-box mb-4">
+                                        <div className="card search-custom-post-card h-100">
+                                            <img
+                                                src={post.media}
+                                                onClick={() => setSelectedPost(post)}
+                                                className="card-img-top"
+                                                alt={post.title}
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
                     <Slider />
                 </div>
             ) : (
                 <div className="user-profile-box">
                     <button onClick={handleBackToSearch} className="btn btn-primary ms-2">Back to Search</button>
-                    <UserDetails user={selectedUser} /> 
+                    <UserDetails user={selectedUser} />
                 </div>
+            )}
+            {selectedPost && (
+                <PostShow
+                    post={selectedPost}
+                    onClose={() => setSelectedPost(null)}
+                />
             )}
         </>
     );

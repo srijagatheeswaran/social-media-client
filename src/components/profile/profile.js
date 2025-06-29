@@ -285,9 +285,9 @@ export default function Profile() {
                         <div className="h6 name">{profileData.name}</div>
                         <div className="p email">{profileData.email}</div>
                         <div className="sub-detail">
-                            <p className="gender">Gender : {profileData.gender}</p>
-                            <p className="bio">Bio : {profileData.bio}</p>
-
+                           {profileData.gender&&<p className="gender">Gender : {profileData.gender}</p>} 
+                           {profileData.bio&&<p className="bio">Bio : {profileData.bio}</p>} 
+                           
                         </div>
                     </div>
                 </div>
