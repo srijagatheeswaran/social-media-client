@@ -44,6 +44,7 @@ export default function Message() {
             const unique = Array.from(new Map(merged.map(m => [m._id, m])).values());
             return unique.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
         });
+        scrollToBottom();
     };
 
     // Auth & initial data load
@@ -115,8 +116,8 @@ export default function Message() {
         }
     };
 
-    if (loading) return <div className="loading">Loading...</div>;
-
+    if (loading) return <div className="loading text-light text-center">Loading...</div>;
+    // console.log(messages);
     return (
         <div className="message-page-container">
             {/* Header */}
@@ -137,9 +138,15 @@ export default function Message() {
                     </div>
                 ) : (
                     messages.map((msg) => {
-                        const senderId = typeof msg.sender === 'string' ? msg.sender : msg.sender?._id;
+                        const senderId = typeof msg.sender === "string" ? msg.sender : msg.sender._id;
+                        const receiverId = typeof msg.receiver === "string" ? msg.receiver : msg.receiver._id;
                         const isMine = senderId === currentUserId;
 
+                        const isRelevant =
+                            (senderId === currentUserId && receiverId === id) ||
+                            (senderId === id && receiverId === currentUserId);
+
+                        if (!isRelevant) return null;
                         return (
                             <div key={msg._id} className={`message-bubble ${isMine ? "sent" : "received"}`}>
                                 <p>{msg.content}</p>

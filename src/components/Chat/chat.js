@@ -54,7 +54,7 @@ export default function Chat() {
         });
 
         newSocket.on("connect", () => {
-            console.log("✅ Connected to socket:", newSocket.id);
+            // console.log("✅ Connected to socket:", newSocket.id);
             newSocket.emit("register_user", currentUserId);
         });
 
