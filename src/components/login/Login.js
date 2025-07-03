@@ -64,6 +64,7 @@ function Login() {
                     if (status === 200) {
                         localStorage.setItem("email", body.email);
                         localStorage.setItem("token", body.token);
+                        localStorage.setItem("id", body.id);
                         Toaster(body.message, "success");
                         navigate("/home");
                     } else if (status === 400) {

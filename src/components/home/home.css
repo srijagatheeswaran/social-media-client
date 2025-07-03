@@ -7,6 +7,18 @@
     padding-right: 15px;
     /* for scrollbar spacing */
 }
+.card-header {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
+}
+.card-header .post-profile-img{
+    height: auto;
+    border-radius: 50%;
+    width: 40px;
+    cursor: pointer;
+}
 
 /* Smooth scroll and better UX */
 .container.my-5::-webkit-scrollbar {

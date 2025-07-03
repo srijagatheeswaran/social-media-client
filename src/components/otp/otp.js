@@ -51,7 +51,7 @@ const OTPVerification = () => {
     fetch(`${BASE_URL}/auth/verify-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 'otp':otps, email })
+      body: JSON.stringify({ 'otp': otps, email })
     })
       .then(response => response.json().then(data => ({ status: response.status, body: data }))) // Get status
       .then(({ status, body }) => {
@@ -59,6 +59,7 @@ const OTPVerification = () => {
         if (status === 200) {
           Toaster(body.message || "OTP Verified Successfully!", "success");
           localStorage.setItem("token", body.token);
+          localStorage.setItem("id", body.id);
           navigate("/home");
         } else if (status === 400) {
           Toaster(body.message || "Invalid OTP", "error");

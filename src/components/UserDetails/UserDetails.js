@@ -92,6 +92,7 @@ const UserDetails = ({ user }) => {
                         <p><strong>Posts:</strong> {postsCount}</p>
                         <p><strong>Following:</strong> {followingCount}</p>
                         <p><strong>Followers:</strong> {followersCount}</p>
+                        <button className='btn btn-secondary' onClick={() => window.location.href = `/message/${userInfo._id}`}>Message</button>
                     </div>
                 </div>
             </div>

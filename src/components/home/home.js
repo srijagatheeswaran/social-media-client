@@ -60,6 +60,12 @@ function Home() {
                         {posts.map((post) => (
                             <div key={post._id} className="col-md-4 post-main-box mb-4">
                                 <div className="card custom-post-card h-100">
+                                    <div className="card-header">
+                                        <img src={post.userId?.profileImage || "https://via.placeholder.com/50"} className="post-profile-img"/>
+                                        <p className="card-text text-muted">
+                                            {post.userId?.username || "Anonymous"}
+                                        </p>
+                                    </div>
                                     <img
                                         src={post.media}
                                         className="card-img-top"
@@ -69,9 +75,9 @@ function Home() {
                                     />
                                     <div className="card-body">
                                         <h5 className="card-title">{post.title}</h5>
-                                        <p className="card-text text-muted">
+                                        {/* <p className="card-text text-muted">
                                             By {post.userId?.username || "Anonymous"}
-                                        </p>
+                                        </p> */}
                                     </div>
                                 </div>
                             </div>

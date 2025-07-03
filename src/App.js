@@ -13,6 +13,7 @@ import { ToastProvider } from './context/toastContext';
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './context/AuthContext';
+import Message from './components/message/message';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/search" element={<Search />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/message/:id" element={<Message/>} />
             <Route path="/otp-verification" element={<Otp />} />
           </Routes>
           <ToastContainer position="top-right" autoClose={3000} theme="dark" />

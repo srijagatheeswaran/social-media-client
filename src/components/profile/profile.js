@@ -206,6 +206,7 @@ export default function Profile() {
                 navigate("/login")
                 localStorage.removeItem("email")
                 localStorage.removeItem("token")
+                localStorage.removeItem("id")
             },
             onCancel: () => setShowPopup(false)
         });
