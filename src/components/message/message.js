@@ -124,7 +124,7 @@ export default function Message() {
         }
     };
 
-    if (loading) return <div className="loading text-light text-center">Loading...</div>;
+    if (loading) return <div className="loading text-light text-center w-100">Loading...</div>;
     // console.log(messages);
     return (
         <>
