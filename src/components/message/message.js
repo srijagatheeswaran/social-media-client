@@ -5,6 +5,8 @@ import BASE_URL from "../../config";
 import { useParams, useNavigate } from 'react-router-dom';
 import customFetch from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import Loader from "../loader/loader";
+
 
 export default function Message() {
     const { id } = useParams(); // receiverId
@@ -19,6 +21,8 @@ export default function Message() {
     const scrollRef = useRef(null);
     const isInitialScroll = useRef(true);
     const { isAuthenticated, loading } = useAuth();
+    const [loader, setloader] = useState(false)
+
     const navigate = useNavigate();
 
     // Scroll to bottom
@@ -30,6 +34,7 @@ export default function Message() {
 
     // Fetch paginated messages
     const fetchMessages = async () => {
+        setloader(true);
         const { status, body } = await customFetch(`messages/${id}?page=${page}&limit=20`);
         if (body.message) {
 
@@ -37,6 +42,8 @@ export default function Message() {
         if (body.otherUser) setOtherUser(body.otherUser);
         if (status !== 200 || !body.messages?.length) {
             setHasMore(false);
+            setloader(false);
+
             return;
         }
         setMessages(prev => {
@@ -44,6 +51,7 @@ export default function Message() {
             const unique = Array.from(new Map(merged.map(m => [m._id, m])).values());
             return unique.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
         });
+        setloader(false);
         scrollToBottom();
     };
 
@@ -119,64 +127,67 @@ export default function Message() {
     if (loading) return <div className="loading text-light text-center">Loading...</div>;
     // console.log(messages);
     return (
-        <div className="message-page-container">
-            {/* Header */}
-            <div className="message-header">
-                <img
-                    src={otherUser?.profileImage || "https://via.placeholder.com/40"}
-                    alt="User"
-                    style={{ borderRadius: "50%", width: "40px", height: "40px" }}
-                />
-                <h6 className="m-0">{otherUser?.username || "Unknown User"}</h6>
+        <>
+            {loader && <Loader />}
+            <div className="message-page-container">
+                {/* Header */}
+                <div className="message-header">
+                    <img
+                        src={otherUser?.profileImage || "https://www.pngfind.com/pngs/b/110-1102775_download-empty-profile-hd-png-download.png"}
+                        alt="User"
+                        style={{ borderRadius: "50%", width: "40px", height: "40px" }}
+                    />
+                    <h6 className="m-0">{otherUser?.username || "Unknown User"}</h6>
+                </div>
+
+                {/* Message List */}
+                <div className="message-list-container" onScroll={handleScroll} ref={scrollRef}>
+                    {messages.length === 0 ? (
+                        <div className="no-messages">
+                            <p>No messages yet. Start the conversation!</p>
+                        </div>
+                    ) : (
+                        messages.map((msg) => {
+                            const senderId = typeof msg.sender === "string" ? msg.sender : msg.sender._id;
+                            const receiverId = typeof msg.receiver === "string" ? msg.receiver : msg.receiver._id;
+                            const isMine = senderId === currentUserId;
+
+                            const isRelevant =
+                                (senderId === currentUserId && receiverId === id) ||
+                                (senderId === id && receiverId === currentUserId);
+
+                            if (!isRelevant) return null;
+                            return (
+                                <div key={msg._id} className={`message-bubble ${isMine ? "sent" : "received"}`}>
+                                    <p>{msg.content}</p>
+                                    <span className="timestamp">
+                                        {new Date(msg.timestamp).toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                        })}
+                                    </span>
+                                </div>
+                            );
+                        })
+                    )}
+                    <div ref={bottomRef} />
+                </div>
+
+                {/* Input */}
+                <div className="message-send-container">
+                    <input
+                        type="text"
+                        className="message-input"
+                        placeholder="Type a message..."
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                    />
+                    <button className="message-send-btn" onClick={handleSend}>
+                        Send
+                    </button>
+                </div>
             </div>
-
-            {/* Message List */}
-            <div className="message-list-container" onScroll={handleScroll} ref={scrollRef}>
-                {messages.length === 0 ? (
-                    <div className="no-messages">
-                        <p>No messages yet. Start the conversation!</p>
-                    </div>
-                ) : (
-                    messages.map((msg) => {
-                        const senderId = typeof msg.sender === "string" ? msg.sender : msg.sender._id;
-                        const receiverId = typeof msg.receiver === "string" ? msg.receiver : msg.receiver._id;
-                        const isMine = senderId === currentUserId;
-
-                        const isRelevant =
-                            (senderId === currentUserId && receiverId === id) ||
-                            (senderId === id && receiverId === currentUserId);
-
-                        if (!isRelevant) return null;
-                        return (
-                            <div key={msg._id} className={`message-bubble ${isMine ? "sent" : "received"}`}>
-                                <p>{msg.content}</p>
-                                <span className="timestamp">
-                                    {new Date(msg.timestamp).toLocaleTimeString([], {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}
-                                </span>
-                            </div>
-                        );
-                    })
-                )}
-                <div ref={bottomRef} />
-            </div>
-
-            {/* Input */}
-            <div className="message-send-container">
-                <input
-                    type="text"
-                    className="message-input"
-                    placeholder="Type a message..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                />
-                <button className="message-send-btn" onClick={handleSend}>
-                    Send
-                </button>
-            </div>
-        </div>
+        </>
     );
 }

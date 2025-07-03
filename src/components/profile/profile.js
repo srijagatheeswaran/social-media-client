@@ -13,7 +13,8 @@ import PostShow from "../post_show/post_show";
 import Popup from '../Popup/Popup';
 import ImageCropper from '../ImageCropper';
 import { useRef } from 'react';
-
+import UserListModal from "./UserListModal";
+import UserDetails from "../UserDetails/UserDetails";
 
 
 
@@ -40,9 +41,16 @@ export default function Profile() {
     const { isAuthenticated, loading } = useAuth();
     const [showPopup, setShowPopup] = useState(false);
     const [popupConfig, setPopupConfig] = useState(null);
-
-
+    const [followingUsers, setFollowingUsers] = useState([]);
+    const [showFollowing, setShowFollowing] = useState(false);
+    const [userListData, setUserListData] = useState([]);
+    const [userListTitle, setUserListTitle] = useState("");
+    const [showUserListModal, setShowUserListModal] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const handleBackToHome = () => {
+        setSelectedUser(null);
+    };
 
     const handlePostClick = (post) => {
         setSelectedPost(post);
@@ -166,7 +174,7 @@ export default function Profile() {
 
             const { status, body } = await customFetch("profile/uploadImage", {
                 method: "POST",
-                body: formData, 
+                body: formData,
             });
 
             if (status === 200) {
@@ -193,6 +201,29 @@ export default function Profile() {
         }
 
     }
+    const handleUserList = async (type) => {
+        setloader(true);
+        try {
+            const endpoint = type === "followers" ? "follow/followers-list" : "follow/following-list";
+            const title = type === "followers" ? "Followers" : "Following";
+
+            const { status, body } = await customFetch(endpoint);
+            if (status === 200) {
+                setUserListData(body.users || []); // Adjust based on API shape
+                setUserListTitle(title);
+                setShowUserListModal(true);
+            } else {
+                Toaster("Failed to fetch users", "error");
+            }
+        } catch (error) {
+            console.error(error);
+            Toaster("Network error", "error");
+        } finally {
+            setloader(false);
+        }
+    };
+
+
     function Logout() {
         setPopupConfig({
             title: "Logout",
@@ -253,95 +284,113 @@ export default function Profile() {
 
 
     return <>
-        <Header isAuthenticated={isAuthenticated} fetchPosts={fetchPosts} />
-        {cropImage && (
-            <ImageCropper
-                imageSrc={cropImage}
-                onCancel={() => setCropImage(null)}
-                onCropComplete={handleCropComplete}
+        {!selectedUser ? (
+            <>
+                <Header isAuthenticated={isAuthenticated} fetchPosts={fetchPosts} />
+                {cropImage && (
+                    <ImageCropper
+                        imageSrc={cropImage}
+                        onCancel={() => setCropImage(null)}
+                        onCropComplete={handleCropComplete}
+                    />
+                )}
+                <div className="profile-container">
+                    <div className="profile">
+                        <Update showUpdateHandle={showUpdateHandle} fetchProfile={fetchProfile} addClass={addClass} data={profileData} />
+                        {/* {showUpdate ? <Update showUpdateHandle={showUpdateHandle} addClass={addClass}  /> : null} */}
+                        <button className="btn edit" onClick={showUpdateHandle}><span>Edit</span><i className="fa-solid fa-user-pen"></i></button>
+                        <button className="btn btn-danger" onClick={Logout} ><span>Logout</span><i className="bi bi-box-arrow-right"></i> </button>
+                        <div className="profile-contant-box">
+                            <div className="profile-img-box col-6">
+                                <div className="imgDiv">
+                                    <label htmlFor="imgInput"><i className="bi bi-upload"></i></label>
+                                    {/* <input type="file" accept="image/*" id="imgInput" onChange={handleImageChange} /> */}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        id="imgInput"
+                                        ref={fileInputRef}
+                                        onChange={handleImageChange}
+                                    />
+                                    <img src={imageUrl} />
+                                </div>
+                            </div>
+                            <div className="details col-6">
+                                <div className="h6 name">{profileData.name}</div>
+                                <div className="p email">{profileData.email}</div>
+                                <div className="sub-detail">
+                                    {profileData.gender && <p className="gender">Gender : {profileData.gender}</p>}
+                                    {profileData.bio && <p className="bio">Bio : {profileData.bio}</p>}
+
+                                </div>
+                            </div>
+                        </div>
+                        <div className="AccountDetails">
+                            <div className="sub-box">
+                                <span className="h1 pb-1">{profileData.postCount || 0}</span>
+                                <div className="h1">POST</div>
+                            </div>
+                            <div className="sub-box" onClick={() => handleUserList("followers")} style={{ cursor: 'pointer' }}>
+                                <span className="h1 pb-1">{profileData.followersCount || 0}</span>
+                                <div className="h1">FOLLOWERS</div>
+                            </div>
+                            <div className="sub-box" onClick={() => handleUserList("following")} style={{ cursor: 'pointer' }}>
+                                <span className="h1 pb-1">{profileData.followingCount || 0}</span>
+                                <div className="h1">FOLLOWING</div>
+                            </div>
+
+                        </div>
+                        {/* <Post/> */}
+
+
+                    </div>
+                    <div className="post-box">
+
+                        <h6 className="post-head text-light text-center">Posts</h6>
+                        <div className="post-list">
+                            <div className="posts-wrapper">
+                                {posts.length > 0 ? (
+                                    posts.map((item, index) => (
+                                        <div className="post" key={index} onClick={() => handlePostClick(item)}>
+                                            <div className="post-img-wrapper">
+                                                <img src={item.media} alt="Post" className="post-img" />
+                                                <button className="remove-btn" onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleRemove(item._id);
+                                                }}>
+                                                    <i className="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="no-posts">
+                                        <p className="text-light text-center mt-2">No Posts Available</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    {postloader ? <Loader /> : null}
+
+                </div>
+                <Slider />
+            </>
+        ) : (
+            <div className="user-profile-box">
+                <button onClick={handleBackToHome} className="btn btn-primary ms-2">Back to profile </button>
+                <UserDetails user={selectedUser} />
+            </div>
+        )}
+        {showUserListModal && (
+            <UserListModal
+                title={userListTitle}
+                users={userListData}
+                onClose={() => setShowUserListModal(false)}
+                setSelectedUser={setSelectedUser}
             />
         )}
-        <div className="profile-container">
-            <div className="profile">
-                <Update showUpdateHandle={showUpdateHandle} fetchProfile={fetchProfile} addClass={addClass} data={profileData} />
-                {/* {showUpdate ? <Update showUpdateHandle={showUpdateHandle} addClass={addClass}  /> : null} */}
-                <button className="btn edit" onClick={showUpdateHandle}><span>Edit</span><i className="fa-solid fa-user-pen"></i></button>
-                <button className="btn btn-danger" onClick={Logout} ><span>Logout</span><i className="bi bi-box-arrow-right"></i> </button>
-                <div className="profile-contant-box">
-                    <div className="profile-img-box col-6">
-                        <div className="imgDiv">
-                            <label htmlFor="imgInput"><i className="bi bi-upload"></i></label>
-                            {/* <input type="file" accept="image/*" id="imgInput" onChange={handleImageChange} /> */}
-                            <input
-                                type="file"
-                                accept="image/*"
-                                id="imgInput"
-                                ref={fileInputRef}
-                                onChange={handleImageChange}
-                            />
-                            <img src={imageUrl} />
-                        </div>
-                    </div>
-                    <div className="details col-6">
-                        <div className="h6 name">{profileData.name}</div>
-                        <div className="p email">{profileData.email}</div>
-                        <div className="sub-detail">
-                           {profileData.gender&&<p className="gender">Gender : {profileData.gender}</p>} 
-                           {profileData.bio&&<p className="bio">Bio : {profileData.bio}</p>} 
-                           
-                        </div>
-                    </div>
-                </div>
-                <div className="AccountDetails">
-                    <div className="sub-box">
-                        <span className="h1 pb-1">{profileData.postCount || 0}</span>
-                        <div className="h1">POST</div>
-                    </div>
-                    <div className="sub-box">
-                        <span className="h1 pb-1">{profileData.followersCount || 0}</span>
-                        <div className="h1">FOLLOWERS</div>
-                    </div>
-                    <div className="sub-box">
-                        <span className="h1 pb-1">{profileData.followingCount || 0}</span>
-                        <div className="h1">FOLLOWING</div>
-                    </div>
 
-                </div>
-                {/* <Post/> */}
-
-
-            </div>
-            <div className="post-box">
-
-                <h6 className="post-head text-light text-center">Posts</h6>
-                <div className="post-list">
-                    <div className="posts-wrapper">
-                        {posts.length > 0 ? (
-                            posts.map((item, index) => (
-                                <div className="post" key={index} onClick={() => handlePostClick(item)}>
-                                    <div className="post-img-wrapper">
-                                        <img src={item.media} alt="Post" className="post-img" />
-                                        <button className="remove-btn" onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleRemove(item._id);
-                                        }}>
-                                            <i className="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="no-posts">
-                                <p className="text-light text-center mt-2">No Posts Available</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-            {postloader ? <Loader /> : null}
-
-        </div>
-        <Slider />
         {selectedPost && (
 
             <PostShow post={selectedPost} onClose={() => setSelectedPost(null)} />

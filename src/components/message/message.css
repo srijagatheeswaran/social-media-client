@@ -63,6 +63,9 @@
   line-height: 1.4;
   position: relative;
 }
+.message-bubble p{
+  margin: 0;
+}
 
 .sent {
   align-self: flex-end;
@@ -84,6 +87,7 @@
   opacity: 0.6;
   margin-top: 0.25rem;
   text-align: right;
+  color: #fff !important;
 }
 
 /* Input container */

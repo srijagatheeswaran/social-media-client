@@ -26,12 +26,12 @@
 }
 
 .container.my-5::-webkit-scrollbar-thumb {
-    background-color: #007bff;
+    background-color: #444;
     border-radius: 3px;
 }
 
 .container.my-5::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #121212;
 }
 
 /* Card styling */

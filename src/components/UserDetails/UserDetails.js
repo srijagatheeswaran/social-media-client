@@ -13,6 +13,7 @@ const UserDetails = ({ user }) => {
     const [postsCount, setPostsCount] = useState(0);
     const viewerEmail = localStorage.getItem("email");
     const [loader, setLoader] = useState(false);
+    const [followLoading, setFollowLoading] = useState(false);
 
 
     useEffect(() => {
@@ -47,6 +48,7 @@ const UserDetails = ({ user }) => {
     }, [user]);
 
     const handleFollow = async () => {
+        setFollowLoading(true);
         try {
             const followData = {
                 email: viewerEmail,
@@ -67,6 +69,8 @@ const UserDetails = ({ user }) => {
         } catch (error) {
             console.error("Follow error:", error);
             Toaster("Follow action failed", "error");
+        } finally {
+            setFollowLoading(false);
         }
     };
 
@@ -82,17 +86,24 @@ const UserDetails = ({ user }) => {
                         alt={`${userInfo.username}'s avatar`}
                     />
                     <div className='user-details-info'>
-                        <button className='btn btn-primary followbtn' onClick={handleFollow}>
-                            {isFollow ? "Unfollow" : "Follow"}
+                        <button
+                            className="btn btn-primary followbtn"
+                            onClick={handleFollow}
+                            disabled={followLoading}
+                        >
+                            {followLoading ? "Please wait..." : isFollow ? "Unfollow" : "Follow"}
                         </button>
 
                         <p>{userInfo.username}</p>
                         <p>{userInfo.email}</p>
                         <p>{userInfo.bio}</p>
-                        <p><strong>Posts:</strong> {postsCount}</p>
-                        <p><strong>Following:</strong> {followingCount}</p>
-                        <p><strong>Followers:</strong> {followersCount}</p>
-                        <button className='btn btn-secondary' onClick={() => window.location.href = `/message/${userInfo._id}`}>Message</button>
+                        <div className='user-stats'>
+                            <p>Posts: {postsCount}</p>
+                            <p>Following: {followingCount}</p>
+                            <p>Followers: {followersCount}</p>
+                        </div>
+
+                        <button className='btn btn-primary mt-3' onClick={() => window.location.href = `/message/${userInfo._id}`}>Message</button>
                     </div>
                 </div>
             </div>
